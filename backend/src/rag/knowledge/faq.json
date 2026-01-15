@@ -1,0 +1,22 @@
+[
+    {
+        "id": "faq_parallel",
+        "question": "How do I run tasks in parallel?",
+        "answer": "You can define parallel execution using 'parallelGroup' labels or by having multiple dependencies fan out from a single parent. The engine will execute them concurrently."
+    },
+    {
+        "id": "faq_retry",
+        "question": "What happens if a task fails?",
+        "answer": "You can define a 'retryPolicy' in the manualFields. The Temporal engine will automatically retry based on this policy (e.g., maxAttempts, backoff)."
+    },
+    {
+        "id": "faq_timeout",
+        "question": "How do I set a timeout?",
+        "answer": "Use the 'timeoutSeconds' field in the activity definition. If the activity takes longer, it will be cancelled."
+    },
+    {
+        "id": "faq_general",
+        "question": "Tell me about the IDScan Orchestration Platform.",
+        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+    }
+]

@@ -1,0 +1,51 @@
+[
+    {
+        "id": "fetch_user",
+        "description": "Fetch User Details. Retrieve user profile information from the primary database using their ID. Returns name, email, and preferences.",
+        "schema": {
+            "type": "http_call",
+            "method": "GET",
+            "endpoint": "/users/{id}",
+            "inputs": {
+                "id": "string"
+            }
+        }
+    },
+    {
+        "id": "fraud_check",
+        "description": "Fraud Security Check. Calculate specific fraud score for a given user ID to assess risk and determine if the user is legitimate.",
+        "schema": {
+            "type": "http_call",
+            "method": "GET",
+            "endpoint": "/fraud-scores/{id}",
+            "inputs": {
+                "id": "string"
+            }
+        }
+    },
+    {
+        "id": "social_enrichment",
+        "description": "Social Enrichment. Gather additional social media data (LinkedIn, Twitter) and enrich the user profile.",
+        "schema": {
+            "type": "http_call",
+            "method": "POST",
+            "endpoint": "/enrich/{id}",
+            "inputs": {
+                "id": "string"
+            }
+        }
+    },
+    {
+        "id": "system_audit",
+        "description": "System Audit Log. Log the completion of a workflow, transactions, or sensitive actions to the central system audit.",
+        "schema": {
+            "type": "http_call",
+            "method": "POST",
+            "endpoint": "/audit-logs",
+            "inputs": {
+                "event": "string",
+                "details": "object"
+            }
+        }
+    }
+]

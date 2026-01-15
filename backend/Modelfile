@@ -1,0 +1,9 @@
+FROM ./mistral-finetuned.gguf
+
+# Set parameters to force deterministic/structured output
+PARAMETER stop "</s>"
+PARAMETER temperature 0.1
+PARAMETER top_p 0.9
+
+# System prompt matching the fine-tuning context
+SYSTEM "You are an expert user workflow generation assistant. Your task is to analyze user requests and generate valid JSON workflows matching the system schema. You must Output ONLY valid JSON."

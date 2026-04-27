@@ -2,21 +2,26 @@
     {
         "id": "faq_parallel",
         "question": "How do I run tasks in parallel?",
-        "answer": "You can define parallel execution using 'parallelGroup' labels or by having multiple dependencies fan out from a single parent. The engine will execute them concurrently."
+        "answer": "You can define parallel execution using 'parallel_group' labels on activities. Activities sharing the same parallel_group value will run concurrently. Use dependencies with condition 'success' to define fan-out and fan-in patterns."
     },
     {
         "id": "faq_retry",
         "question": "What happens if a task fails?",
-        "answer": "You can define a 'retryPolicy' in the manualFields. The Temporal engine will automatically retry based on this policy (e.g., maxAttempts, backoff)."
+        "answer": "You can define a 'retry_policy' with 'maximum_attempts' and 'initial_interval_seconds'. The Temporal engine will automatically retry based on this policy. You can also define failure branches using dependencies with condition 'failure' to route to alternative activities like manual_review."
     },
     {
         "id": "faq_timeout",
         "question": "How do I set a timeout?",
-        "answer": "Use the 'timeoutSeconds' field in the activity definition. If the activity takes longer, it will be cancelled."
+        "answer": "Use the 'timeout_seconds' field in the activity definition. If the activity takes longer than the specified seconds, it will be cancelled."
+    },
+    {
+        "id": "faq_failure_branch",
+        "question": "How do I handle failures with a fallback?",
+        "answer": "Add a dependency with condition 'failure' from the activity that might fail to the fallback activity. For example: { from: 'fraud_check', to: 'manual_review', condition: 'failure' }. The failure target must be a terminal node — no chaining after failure."
     },
     {
         "id": "faq_general",
         "question": "Tell me about the IDScan Orchestration Platform.",
-        "answer": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+        "answer": "The IDScan Orchestration Platform uses Temporal workflows to execute DAG-based pipelines. Workflows are defined as JSON with activities (HTTP calls), dependencies (success/failure conditions), and parallel groups. The system supports automatic retries, timeouts, parallel execution, and failure branching."
     }
 ]

@@ -1,12 +1,13 @@
 import axios from "axios";
 
 const OLLAMA_URL = "http://localhost:11434/api/generate";
+const MODEL_NAME = process.env.OLLAMA_MODEL || "mistral-workflow";
 
 export async function generateFromLLM(
   prompt: string
 ): Promise<string> {
   const response = await axios.post(OLLAMA_URL, {
-    model: "mistral-workflow",
+    model: MODEL_NAME,
     prompt,
     stream: false
   });
@@ -16,7 +17,7 @@ export async function generateFromLLM(
 
 export async function* streamFromLLM(prompt: string): AsyncGenerator<string> {
   const response = await axios.post(OLLAMA_URL, {
-    model: "mistral-workflow",
+    model: MODEL_NAME,
     prompt,
     stream: true
   }, {

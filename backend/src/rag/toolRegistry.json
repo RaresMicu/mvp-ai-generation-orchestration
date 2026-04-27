@@ -5,10 +5,7 @@
         "schema": {
             "type": "http_call",
             "method": "GET",
-            "endpoint": "/users/{id}",
-            "inputs": {
-                "id": "string"
-            }
+            "endpoint": "/users/{id}"
         }
     },
     {
@@ -17,10 +14,7 @@
         "schema": {
             "type": "http_call",
             "method": "GET",
-            "endpoint": "/fraud-scores/{id}",
-            "inputs": {
-                "id": "string"
-            }
+            "endpoint": "/fraud/{id}"
         }
     },
     {
@@ -29,10 +23,7 @@
         "schema": {
             "type": "http_call",
             "method": "POST",
-            "endpoint": "/enrich/{id}",
-            "inputs": {
-                "id": "string"
-            }
+            "endpoint": "/enrich/{id}"
         }
     },
     {
@@ -41,11 +32,16 @@
         "schema": {
             "type": "http_call",
             "method": "POST",
-            "endpoint": "/audit-logs",
-            "inputs": {
-                "event": "string",
-                "details": "object"
-            }
+            "endpoint": "/audit"
+        }
+    },
+    {
+        "id": "manual_review",
+        "description": "Manual Review. Escalate a case to a human reviewer for manual inspection and verification when automated checks are insufficient.",
+        "schema": {
+            "type": "http_call",
+            "method": "POST",
+            "endpoint": "/review"
         }
     }
 ]

@@ -109,8 +109,7 @@ export default function WorkflowGenerator() {
 
                 // Add default manual fields if missing
                 const fullDef = {
-                    workflow: parsed.workflow || parsed, // Handle if it didn't wrap in "workflow"
-                    manualFields: parsed.manualFields || ["retryPolicy", "timeoutSeconds"]
+                    workflow: parsed.workflow || parsed // Handle if it didn't wrap in "workflow"
                 };
                 setJsonResult(fullDef);
             } else {
@@ -170,8 +169,7 @@ export default function WorkflowGenerator() {
                 entrypoint: "",
                 activities: [],
                 dependencies: []
-            },
-            manualFields: ["retryPolicy", "timeoutSeconds"]
+            }
         });
         setExecutionResult(null);
         setError(null);
@@ -185,9 +183,9 @@ export default function WorkflowGenerator() {
             type: 'http_call',
             method: template.method,
             endpoint: template.endpoint,
-            parallelGroup: null,
-            retryPolicy: null,
-            timeoutSeconds: null
+            parallel_group: null,
+            retry_policy: null,
+            timeout_seconds: null
         };
 
         const newWorkflow = { ...jsonResult.workflow };
@@ -244,12 +242,12 @@ export default function WorkflowGenerator() {
                     // We found a diamond! Source and ConvergingUncles are parallel branches joining at Target.
                     const firstUncleId = convergingUncles[0];
                     const firstUncle = newWorkflow.activities.find((a: any) => a.id === firstUncleId);
-                    const groupName = firstUncle?.parallelGroup || `parallel_group_${Date.now().toString().slice(-4)}`;
+                    const groupName = firstUncle?.parallel_group || `parallel_group_${Date.now().toString().slice(-4)}`;
 
                     // Apply group to Source and ALL Converging Uncles
                     newWorkflow.activities = newWorkflow.activities.map((a: any) => {
                         if (a.id === source || convergingUncles.includes(a.id)) {
-                            return { ...a, parallelGroup: groupName };
+                            return { ...a, parallel_group: groupName };
                         }
                         return a;
                     });

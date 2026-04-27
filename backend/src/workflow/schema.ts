@@ -3,16 +3,17 @@ import { z } from "zod";
 export const ActivitySchema = z.object({
   id: z.string(),
   type: z.literal("http_call"),
-  method: z.enum(["GET", "POST"]),
+  method: z.enum(["GET", "POST", "PUT", "DELETE"]),
   endpoint: z.string(),
-  parallelGroup: z.string().nullable().optional(),
-  retryPolicy: z
+  parallel_group: z.string().nullable().optional(),
+  retry_policy: z
     .object({
-      maxAttempts: z.number(),
-      backoffSeconds: z.number()
+      maximum_attempts: z.number(),
+      initial_interval_seconds: z.number()
     })
-    .nullable(),
-  timeoutSeconds: z.number().nullable()
+    .nullable()
+    .optional(),
+  timeout_seconds: z.number().nullable().optional()
 });
 
 export const WorkflowSchema = z.object({
@@ -23,9 +24,9 @@ export const WorkflowSchema = z.object({
     dependencies: z.array(
       z.object({
         from: z.string(),
-        to: z.string()
+        to: z.string(),
+        condition: z.enum(["success", "failure"])
       })
     )
-  }),
-  manualFields: z.array(z.string())
+  })
 });

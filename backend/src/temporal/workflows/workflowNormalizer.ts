@@ -11,17 +11,13 @@ export function normalizeWorkflow(parsed: any) {
         entrypoint: "",
         activities: [],
         dependencies: []
-      },
-      manualFields: []
+      }
     };
   }
 
   sanitizeActivities(parsed.workflow);
   normalizeGraph(parsed.workflow);
   sanitizeDependencies(parsed.workflow);
-
-  // Ensure manualFields always exist
-  parsed.manualFields ??= ["retryPolicy", "timeoutSeconds"];
 
   return parsed;
 }

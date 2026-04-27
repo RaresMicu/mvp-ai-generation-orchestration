@@ -1,19 +1,20 @@
 export type Activity = {
   id: string;
   type: "http_call";
-  method: "GET" | "POST";
+  method: "GET" | "POST" | "PUT" | "DELETE";
   endpoint: string;
-  parallelGroup?: string | null;
-  retryPolicy?: {
-    maxAttempts: number;
-    backoffSeconds: number;
-  };
-  timeoutSeconds?: number;
+  parallel_group?: string | null;
+  retry_policy?: {
+    maximum_attempts: number;
+    initial_interval_seconds: number;
+  } | null;
+  timeout_seconds?: number | null;
 };
 
 export type Dependency = {
   from: string;
   to: string;
+  condition: "success" | "failure";
 };
 
 export type WorkflowDefinition = {
@@ -23,5 +24,4 @@ export type WorkflowDefinition = {
     activities: Activity[];
     dependencies: Dependency[];
   };
-  manualFields: string[];
 };

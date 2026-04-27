@@ -16,7 +16,7 @@ ${tools}
 
 Task:
 1. Invent a realistic user request.
-   ${complexity === 'complex' ? '- MUST involve parallel execution (Diamond Pattern).\n   - E.g., One task triggers two parallel tasks, which then converge to a final task.' : '- A standard sequential or simple linear flow.'}
+   ${complexity === 'complex' ? '- MUST involve parallel execution (Diamond Pattern).\n   - E.g., One task triggers two parallel tasks, which then converge to a final task.\n   - May include a failure branch using condition: "failure".' : '- A standard sequential or simple linear flow.\n   - May include a failure branch using condition: "failure".'}
 2. Create the corresponding VALID JSON workflow for it.
 
 CRITICAL: You MUST use this EXACT structure:
@@ -28,25 +28,30 @@ CRITICAL: You MUST use this EXACT structure:
       {
         "id": "string",
         "type": "http_call",
-        "method": "GET" | "POST",
+        "method": "GET | POST | PUT | DELETE",
         "endpoint": "string",
-        "inputs": "object | null",
-        "parallelGroup": "string | null",
-        "retryPolicy": { "maxAttempts": number, "backoffSeconds": number } | null,
-        "timeoutSeconds": number | null
+        "parallel_group": "string | null",
+        "retry_policy": {
+          "maximum_attempts": "integer",
+          "initial_interval_seconds": "integer"
+        },
+        "timeout_seconds": "integer"
       }
     ],
     "dependencies": [
-      { "from": "string", "to": "string" }
+      {
+        "from": "string",
+        "to": "string",
+        "condition": "success | failure"
+      }
     ]
-  },
-  "manualFields": ["retryPolicy", "timeoutSeconds"]
+  }
 }
 
 Output strictly valid JSON with NO markdown:
 {
-    "instruction": "The user request",
-    "input": "",
+    "instruction": "Generate a workflow JSON from the request.",
+    "input": "The user request",
     "output": "The compact minified JSON string of the workflow"
 }
 `;

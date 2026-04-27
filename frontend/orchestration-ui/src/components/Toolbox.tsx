@@ -1,9 +1,10 @@
 
 const PREDEFINED_TASKS = [
     { id: 'fetch_user', label: 'Fetch User', method: 'GET', endpoint: '/users/{id}' },
-    { id: 'fraud_check', label: 'Fraud Check', method: 'GET', endpoint: '/fraud-scores/{id}' },
-    { id: 'enrich_profile', label: 'Enrich Profile', method: 'POST', endpoint: '/enrich/{id}' },
-    { id: 'audit_log', label: 'Audit Log', method: 'POST', endpoint: '/audit-logs' },
+    { id: 'fraud_check', label: 'Fraud Check', method: 'GET', endpoint: '/fraud/{id}' },
+    { id: 'social_enrichment', label: 'Social Enrichment', method: 'POST', endpoint: '/enrich/{id}' },
+    { id: 'system_audit', label: 'System Audit', method: 'POST', endpoint: '/audit' },
+    { id: 'manual_review', label: 'Manual Review', method: 'POST', endpoint: '/review' },
 ];
 
 export default function Toolbox({ onAdd }: { onAdd: (task: any) => void }) {

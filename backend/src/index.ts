@@ -41,6 +41,12 @@ const start = async () => {
       return { id, name: "John Doe", email: "john@example.com", riskLevel: "low" };
     });
 
+    // Fraud check (new endpoint matching training data)
+    server.get("/fraud/:id", async (req, reply) => {
+      return { fraudScore: 12, status: "safe" };
+    });
+
+    // Legacy fraud endpoint (kept for backwards compat)
     server.get("/fraud-scores/:id", async (req, reply) => {
       return { fraudScore: 12, status: "safe" };
     });
@@ -49,9 +55,22 @@ const start = async () => {
       return { enriched: true, socialScore: 85, lastLogin: new Date().toISOString() };
     });
 
+    // Audit endpoint (new, matching training data)
+    server.post("/audit", async (req, reply) => {
+      console.log("AUDIT LOG:", req.body);
+      return { logged: true, timestamp: Date.now() };
+    });
+
+    // Legacy audit endpoint (kept for backwards compat)
     server.post("/audit-logs", async (req, reply) => {
       console.log("AUDIT LOG:", req.body);
       return { logged: true, timestamp: Date.now() };
+    });
+
+    // Manual review endpoint (new)
+    server.post("/review", async (req, reply) => {
+      console.log("MANUAL REVIEW:", req.body);
+      return { reviewed: true, assignedTo: "reviewer-001", timestamp: Date.now() };
     });
 
     // Mock endpoint for Bot Answers (from RAG)

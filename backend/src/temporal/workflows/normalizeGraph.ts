@@ -1,30 +1,35 @@
 export function normalizeGraph(workflow: any) {
   const parallelGroups: Record<string, string[]> = {};
 
-  // Build parallel group map
+  // Build parallel group map (snake_case field)
   workflow.activities.forEach((a: any) => {
-    if (a.parallelGroup) {
-      if (!parallelGroups[a.parallelGroup]) {
-        parallelGroups[a.parallelGroup] = [];
+    if (a.parallel_group) {
+      if (!parallelGroups[a.parallel_group]) {
+        parallelGroups[a.parallel_group] = [];
       }
-      parallelGroups[a.parallelGroup].push(a.id);
+      parallelGroups[a.parallel_group].push(a.id);
     }
   });
 
-  // Rewrite dependencies
+  // Rewrite dependencies — expand group references if any
   const normalizedDeps: any[] = [];
 
   workflow.dependencies.forEach((dep: any) => {
-    // If "from" is a parallelGroup, expand it
+    // If "from" is a parallelGroup name, expand it to individual activity edges
     if (parallelGroups[dep.from]) {
       parallelGroups[dep.from].forEach((activityId) => {
         normalizedDeps.push({
           from: activityId,
           to: dep.to,
+          condition: dep.condition || "success"
         });
       });
     } else {
-      normalizedDeps.push(dep);
+      // Ensure condition field always exists
+      normalizedDeps.push({
+        ...dep,
+        condition: dep.condition || "success"
+      });
     }
   });
 

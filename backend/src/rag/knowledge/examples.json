@@ -1,7 +1,7 @@
 [
     {
         "id": "example_onboarding",
-        "description": "User Onboarding Flow",
+        "description": "User Onboarding Flow. Fetch user data, then enrich their profile with social data.",
         "json": {
             "workflow": {
                 "name": "user_onboarding",
@@ -12,36 +12,39 @@
                         "type": "http_call",
                         "method": "GET",
                         "endpoint": "/users/{id}",
-                        "parallelGroup": null,
-                        "retryPolicy": null,
-                        "timeoutSeconds": null
+                        "parallel_group": null,
+                        "retry_policy": {
+                            "maximum_attempts": 3,
+                            "initial_interval_seconds": 5
+                        },
+                        "timeout_seconds": 30
                     },
                     {
                         "id": "social_enrichment",
                         "type": "http_call",
                         "method": "POST",
                         "endpoint": "/enrich/{id}",
-                        "parallelGroup": null,
-                        "retryPolicy": null,
-                        "timeoutSeconds": null
+                        "parallel_group": null,
+                        "retry_policy": {
+                            "maximum_attempts": 3,
+                            "initial_interval_seconds": 5
+                        },
+                        "timeout_seconds": 30
                     }
                 ],
                 "dependencies": [
                     {
                         "from": "fetch_user",
-                        "to": "social_enrichment"
+                        "to": "social_enrichment",
+                        "condition": "success"
                     }
                 ]
-            },
-            "manualFields": [
-                "retryPolicy",
-                "timeoutSeconds"
-            ]
+            }
         }
     },
     {
         "id": "example_fraud_audit",
-        "description": "Fraud Check and Audit Flow",
+        "description": "Fraud Check and Audit Flow. Run a fraud check, then log the results to the audit system.",
         "json": {
             "workflow": {
                 "name": "fraud_audit_flow",
@@ -51,37 +54,40 @@
                         "id": "fraud_check",
                         "type": "http_call",
                         "method": "GET",
-                        "endpoint": "/fraud-scores/{id}",
-                        "parallelGroup": null,
-                        "retryPolicy": null,
-                        "timeoutSeconds": null
+                        "endpoint": "/fraud/{id}",
+                        "parallel_group": null,
+                        "retry_policy": {
+                            "maximum_attempts": 3,
+                            "initial_interval_seconds": 5
+                        },
+                        "timeout_seconds": 30
                     },
                     {
                         "id": "system_audit",
                         "type": "http_call",
                         "method": "POST",
-                        "endpoint": "/audit-logs",
-                        "parallelGroup": null,
-                        "retryPolicy": null,
-                        "timeoutSeconds": null
+                        "endpoint": "/audit",
+                        "parallel_group": null,
+                        "retry_policy": {
+                            "maximum_attempts": 3,
+                            "initial_interval_seconds": 5
+                        },
+                        "timeout_seconds": 30
                     }
                 ],
                 "dependencies": [
                     {
                         "from": "fraud_check",
-                        "to": "system_audit"
+                        "to": "system_audit",
+                        "condition": "success"
                     }
                 ]
-            },
-            "manualFields": [
-                "retryPolicy",
-                "timeoutSeconds"
-            ]
+            }
         }
     },
     {
         "id": "example_parallel_merge",
-        "description": "Parallel Execution with Merge. Runs risk assessment and social enrichment in parallel, then logs the results. This demonstrates the 'Diamond Pattern'.",
+        "description": "Diamond Pattern. Fetch user, run fraud check and social enrichment in parallel, then log the results once both complete.",
         "json": {
             "workflow": {
                 "name": "parallel_verification_flow",
@@ -92,61 +98,150 @@
                         "type": "http_call",
                         "method": "GET",
                         "endpoint": "/users/{id}",
-                        "parallelGroup": null,
-                        "retryPolicy": null,
-                        "timeoutSeconds": null
+                        "parallel_group": null,
+                        "retry_policy": {
+                            "maximum_attempts": 3,
+                            "initial_interval_seconds": 5
+                        },
+                        "timeout_seconds": 30
                     },
                     {
                         "id": "fraud_check",
                         "type": "http_call",
                         "method": "GET",
-                        "endpoint": "/fraud-scores/{id}",
-                        "parallelGroup": "verification_group",
-                        "retryPolicy": null,
-                        "timeoutSeconds": null
+                        "endpoint": "/fraud/{id}",
+                        "parallel_group": "g1",
+                        "retry_policy": {
+                            "maximum_attempts": 3,
+                            "initial_interval_seconds": 5
+                        },
+                        "timeout_seconds": 30
                     },
                     {
                         "id": "social_enrichment",
                         "type": "http_call",
                         "method": "POST",
                         "endpoint": "/enrich/{id}",
-                        "parallelGroup": "verification_group",
-                        "retryPolicy": null,
-                        "timeoutSeconds": null
+                        "parallel_group": "g1",
+                        "retry_policy": {
+                            "maximum_attempts": 3,
+                            "initial_interval_seconds": 5
+                        },
+                        "timeout_seconds": 30
                     },
                     {
                         "id": "system_audit",
                         "type": "http_call",
                         "method": "POST",
-                        "endpoint": "/audit-logs",
-                        "parallelGroup": null,
-                        "retryPolicy": null,
-                        "timeoutSeconds": null
+                        "endpoint": "/audit",
+                        "parallel_group": null,
+                        "retry_policy": {
+                            "maximum_attempts": 3,
+                            "initial_interval_seconds": 5
+                        },
+                        "timeout_seconds": 30
                     }
                 ],
                 "dependencies": [
                     {
                         "from": "fetch_user",
-                        "to": "fraud_check"
+                        "to": "fraud_check",
+                        "condition": "success"
                     },
                     {
                         "from": "fetch_user",
-                        "to": "social_enrichment"
+                        "to": "social_enrichment",
+                        "condition": "success"
                     },
                     {
                         "from": "fraud_check",
-                        "to": "system_audit"
+                        "to": "system_audit",
+                        "condition": "success"
                     },
                     {
                         "from": "social_enrichment",
-                        "to": "system_audit"
+                        "to": "system_audit",
+                        "condition": "success"
                     }
                 ]
-            },
-            "manualFields": [
-                "retryPolicy",
-                "timeoutSeconds"
-            ]
+            }
+        }
+    },
+    {
+        "id": "example_failure_handling",
+        "description": "Failure Handling. Fetch user data, then run fraud check. If the fraud check fails, escalate to manual review. On success, log the audit.",
+        "json": {
+            "workflow": {
+                "name": "failure_handling_flow",
+                "entrypoint": "fetch_user",
+                "activities": [
+                    {
+                        "id": "fetch_user",
+                        "type": "http_call",
+                        "method": "GET",
+                        "endpoint": "/users/{id}",
+                        "parallel_group": null,
+                        "retry_policy": {
+                            "maximum_attempts": 3,
+                            "initial_interval_seconds": 5
+                        },
+                        "timeout_seconds": 30
+                    },
+                    {
+                        "id": "fraud_check",
+                        "type": "http_call",
+                        "method": "GET",
+                        "endpoint": "/fraud/{id}",
+                        "parallel_group": null,
+                        "retry_policy": {
+                            "maximum_attempts": 3,
+                            "initial_interval_seconds": 5
+                        },
+                        "timeout_seconds": 30
+                    },
+                    {
+                        "id": "system_audit",
+                        "type": "http_call",
+                        "method": "POST",
+                        "endpoint": "/audit",
+                        "parallel_group": null,
+                        "retry_policy": {
+                            "maximum_attempts": 3,
+                            "initial_interval_seconds": 5
+                        },
+                        "timeout_seconds": 30
+                    },
+                    {
+                        "id": "manual_review",
+                        "type": "http_call",
+                        "method": "POST",
+                        "endpoint": "/review",
+                        "parallel_group": null,
+                        "retry_policy": {
+                            "maximum_attempts": 3,
+                            "initial_interval_seconds": 5
+                        },
+                        "timeout_seconds": 30
+                    }
+                ],
+                "dependencies": [
+                    {
+                        "from": "fetch_user",
+                        "to": "fraud_check",
+                        "condition": "success"
+                    },
+                    {
+                        "from": "fraud_check",
+                        "to": "system_audit",
+                        "condition": "success"
+                    },
+                    {
+                        "from": "fraud_check",
+                        "to": "manual_review",
+                        "condition": "failure"
+                    }
+                ]
+            }
         }
     }
 ]

@@ -108,7 +108,6 @@ ${description}
 
       return {
         definition: workflowDef.workflow,
-        manualFields: workflowDef.manualFields,
         message: "Workflow generated successfully. Review and run."
       };
     } catch (err: any) {
@@ -120,12 +119,7 @@ ${description}
   // 2️⃣ Run Existing Definition
   fastify.post("/run-workflow", async (request, reply) => {
     try {
-      const workflowDef = request.body as any; // The full definition object
-
-      // Wrap it back in the structure expected by the worker if needed, 
-      // or just pass it directly if the worker expects the full object.
-      // The generateWorkflow return structure was { workflow: ..., manualFields: ... }
-      // So we expect the frontend to send that back.
+      const workflowDef = request.body as any;
 
       const run = await startWorkflow(workflowDef);
 

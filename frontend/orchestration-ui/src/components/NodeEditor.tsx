@@ -78,6 +78,8 @@ export default function NodeEditor({
                     >
                         <option value="GET">GET</option>
                         <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="DELETE">DELETE</option>
                     </select>
                 </div>
 
@@ -93,8 +95,8 @@ export default function NodeEditor({
                 <div>
                     <label style={{ display: 'block', fontSize: '12px', fontWeight: 'bold' }}>Parallel Group</label>
                     <input
-                        value={node.parallelGroup || ''}
-                        onChange={e => handleChange('parallelGroup', e.target.value || null)}
+                        value={node.parallel_group || ''}
+                        onChange={e => handleChange('parallel_group', e.target.value || null)}
                         placeholder="Group Name (optional)"
                         style={{ width: '100%', padding: '6px', border: '1px solid #ddd', borderRadius: '4px' }}
                     />

@@ -1,5 +1,5 @@
 export const WORKFLOW_GENERATOR_PROMPT = (toolsContext: string, examplesContext: string, faqContext: string) => `
-You are an orchestration assistant using Temporal concepts.
+Generate a workflow JSON from the request.
 
 You MUST return ONLY valid JSON that follows this structure EXACTLY:
 
@@ -11,25 +11,24 @@ You MUST return ONLY valid JSON that follows this structure EXACTLY:
       {
         "id": "string",
         "type": "http_call",
-        "method": "GET" | "POST",
+        "method": "GET | POST | PUT | DELETE",
         "endpoint": "string",
-        "inputs": "object | null",
-        "parallelGroup": "string | null",
-        "retryPolicy": {
-          "maxAttempts": "number",
-          "backoffSeconds": "number"
-        } | null,
-        "timeoutSeconds": "number | null"
+        "parallel_group": "string | null",
+        "retry_policy": {
+          "maximum_attempts": "integer",
+          "initial_interval_seconds": "integer"
+        },
+        "timeout_seconds": "integer"
       }
     ],
     "dependencies": [
       {
         "from": "string",
-        "to": "string"
+        "to": "string",
+        "condition": "success | failure"
       }
     ]
-  },
-  "manualFields": ["retryPolicy", "timeoutSeconds"]
+  }
 }
 
 AVAILABLE API TOOLS (Use ONLY these endpoints):
@@ -45,29 +44,23 @@ ${faqContext}
 CRITICAL RULES (DO NOT VIOLATE):
 
 - Output ONLY JSON. No markdown. No explanations. No comments.
-- The top-level JSON MUST contain ONLY: "workflow" and "manualFields"
+- The top-level JSON MUST contain ONLY: "workflow"
 - "workflow" MUST contain ONLY: "name", "entrypoint", "activities", "dependencies"
-- ALL activities MUST have:
-  - type: "http_call"
-- NEVER create activities of type:
-  - fork
-  - join
-  - parallelBranch
-  - parallelJoin
-  - gateway
-  - control
-- Parallel execution is expressed ONLY using:
-  - "parallelGroup"
-  - "dependencies"
-- "parallelGroup" is metadata ONLY and is NOT a node in the graph
-- Dependencies MUST reference ONLY activity ids (never parallelGroup names)
+- ALL activities MUST have type: "http_call"
+- NEVER create activities of type: fork, join, parallelBranch, parallelJoin, gateway, control
+- Parallel execution is expressed ONLY using "parallel_group" and "dependencies"
+- "parallel_group" is metadata ONLY and is NOT a node in the graph
+- Dependencies MUST reference ONLY activity IDs (never parallel_group names)
+- Every dependency MUST have a "condition" field: either "success" or "failure"
+- Failure branches: a node can have at most ONE failure edge, and the failure target must be terminal (no outgoing edges)
 - All optional fields may be null
 - Do NOT invent extra fields under any circumstance
+
 - IF THE USER ASKS A QUESTION (and does not want a workflow):
   - Return a valid workflow with a SINGLE activity.
   - Activity ID: "bot_answer"
   - Endpoint: "/answer"
-  - Inputs: { "question": "user question", "answer": "The detailed answer from the Knowledge Base" }
+  - No dependencies needed.
 
 - If you cannot comply perfectly, return:
 
@@ -77,13 +70,11 @@ CRITICAL RULES (DO NOT VIOLATE):
     "entrypoint": "error",
     "activities": [],
     "dependencies": []
-  },
-  "manualFields": ["retryPolicy", "timeoutSeconds"]
+  }
 }
 
-Now, generate a workflow or answer for the following user request:
+Now, generate a workflow for the following user request:
 `;
-
 
 
 export const FAQ_PROMPT = `
@@ -94,4 +85,3 @@ If the answer is not present in the context,
 respond exactly with:
 "I don't have that information."
 `;
-

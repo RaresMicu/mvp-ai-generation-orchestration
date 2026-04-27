@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export async function httpCallActivity(input: {
-  method: "GET" | "POST";
+  method: "GET" | "POST" | "PUT" | "DELETE";
   endpoint: string;
   payload?: any;
 }) {

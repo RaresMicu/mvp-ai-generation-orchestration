@@ -18,3 +18,7 @@ yarn-debug.log*
 
 # Environment variables
 .env
+
+backend/node_modules
+frontend/node_modules
+backend/train.jsonl

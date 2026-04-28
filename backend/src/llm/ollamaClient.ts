@@ -4,13 +4,20 @@ const OLLAMA_URL = "http://localhost:11434/api/generate";
 const MODEL_NAME = process.env.OLLAMA_MODEL || "mistral-workflow";
 
 export async function generateFromLLM(
-  prompt: string
+  prompt: string,
+  schema?: any
 ): Promise<string> {
-  const response = await axios.post(OLLAMA_URL, {
+  const payload: any = {
     model: MODEL_NAME,
     prompt,
     stream: false
-  });
+  };
+
+  if (schema) {
+    payload.format = schema;
+  }
+
+  const response = await axios.post(OLLAMA_URL, payload);
 
   return response.data.response;
 }

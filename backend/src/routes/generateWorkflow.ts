@@ -2,6 +2,7 @@ import { generateFromLLM, streamFromLLM } from "../llm/ollamaClient";
 import { WORKFLOW_GENERATOR_PROMPT } from "../llm/prompts";
 import { extractJson } from "../utils/jsonExtractor";
 import { validateWorkflow } from "../workflow/validator";
+import { WorkflowSchema } from "../workflow/schema";
 import { normalizeWorkflow } from "../temporal/workflows/workflowNormalizer";
 import { FastifyInstance } from "fastify";
 import { startWorkflow } from "../temporal/client";
@@ -33,7 +34,9 @@ ${description}
 
   for (let attempt = 1; attempt <= 2; attempt++) {
     try {
-      const raw = await generateFromLLM(prompt);
+      // 3. Generate native JSON Schema from Zod and enforce it in the LLM call!
+      const jsonSchema = WorkflowSchema.toJSONSchema();
+      const raw = await generateFromLLM(prompt, jsonSchema);
       const jsonText = extractJson(raw);
       const parsed = JSON.parse(jsonText);
 

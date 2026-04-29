@@ -83,7 +83,8 @@ ${description}
 
     try {
       // 2. Stream from LLM with Context
-      for await (const chunk of streamFromLLM(prompt)) {
+      const jsonSchema = WorkflowSchema.toJSONSchema();
+      for await (const chunk of streamFromLLM(prompt, jsonSchema)) {
         const payload = JSON.stringify({ chunk });
         reply.raw.write(`data: ${payload}\n\n`);
       }

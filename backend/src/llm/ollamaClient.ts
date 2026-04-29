@@ -10,11 +10,15 @@ export async function generateFromLLM(
   const payload: any = {
     model: MODEL_NAME,
     prompt,
-    stream: false
+    stream: false,
+    options: {
+      temperature: 0, // Lower temperature to prevent hallucinated infinite loops
+      stop: ["```", "###", "Instruction:"] // Stop tokens to force it to stop
+    }
   };
 
   if (schema) {
-    payload.format = schema;
+    payload.format = "json";
   }
 
   const response = await axios.post(OLLAMA_URL, payload);
@@ -22,12 +26,22 @@ export async function generateFromLLM(
   return response.data.response;
 }
 
-export async function* streamFromLLM(prompt: string): AsyncGenerator<string> {
-  const response = await axios.post(OLLAMA_URL, {
+export async function* streamFromLLM(prompt: string, schema?: any): AsyncGenerator<string> {
+  const payload: any = {
     model: MODEL_NAME,
     prompt,
-    stream: true
-  }, {
+    stream: true,
+    options: {
+      temperature: 0,
+      stop: ["```", "###", "Instruction:"]
+    }
+  };
+
+  if (schema) {
+    payload.format = "json";
+  }
+
+  const response = await axios.post(OLLAMA_URL, payload, {
     responseType: 'stream'
   });
 

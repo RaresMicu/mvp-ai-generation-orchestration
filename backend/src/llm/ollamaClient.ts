@@ -12,12 +12,17 @@ export async function generateFromLLM(
     prompt,
     stream: false,
     options: {
-      temperature: 0, // Lower temperature to prevent hallucinated infinite loops
-      stop: ["```", "###", "Instruction:"] // Stop tokens to force it to stop
+      temperature: 0.1, // Slight temperature to prevent argmax loops
+      repeat_penalty: 1.2, // Penalize repeating the same activities
+      top_p: 0.9,
+      stop: ["```", "###", "Instruction:"]
     }
   };
 
   if (schema) {
+    // It seems Ollama's grammar engine is silently rejecting the complex Zod schema
+    // and falling back to text mode (which is why you see ```json).
+    // Setting format to "json" guarantees a clean JSON output without markdown.
     payload.format = "json";
   }
 
@@ -32,7 +37,9 @@ export async function* streamFromLLM(prompt: string, schema?: any): AsyncGenerat
     prompt,
     stream: true,
     options: {
-      temperature: 0,
+      temperature: 0.1,
+      repeat_penalty: 1.2,
+      top_p: 0.9,
       stop: ["```", "###", "Instruction:"]
     }
   };

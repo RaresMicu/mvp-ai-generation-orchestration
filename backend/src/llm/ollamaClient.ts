@@ -12,19 +12,23 @@ export async function generateFromLLM(
     prompt,
     stream: false,
     options: {
-      temperature: 0.4, // Higher temperature to avoid deterministic argmax loops
-      repeat_penalty: 1.5, // Strong penalty for repetition
+      temperature: 0.1, // Safe temperature for generation
+      repeat_penalty: 1.1, // Back to default: high penalty was forcing it to prematurely close the JSON
       top_p: 0.9,
-      num_predict: 800, // Hard limit to prevent infinite hang
+      num_predict: 800,
       stop: ["```", "###", "Instruction:"]
     }
   };
 
   if (schema) {
-    // It seems Ollama's grammar engine is silently rejecting the complex Zod schema
-    // and falling back to text mode (which is why you see ```json).
-    // Setting format to "json" guarantees a clean JSON output without markdown.
-    payload.format = "json";
+    // Deep clone and clean the schema so Ollama's grammar engine accepts it natively
+    const cleanSchema = JSON.parse(JSON.stringify(schema));
+    delete cleanSchema.$schema;
+    if (cleanSchema.additionalProperties !== undefined) {
+      delete cleanSchema.additionalProperties;
+    }
+    // Force Ollama to strictly adhere to the schema (which requires 'dependencies' array)
+    payload.format = cleanSchema;
   }
 
   const response = await axios.post(OLLAMA_URL, payload);
@@ -38,8 +42,8 @@ export async function* streamFromLLM(prompt: string, schema?: any): AsyncGenerat
     prompt,
     stream: true,
     options: {
-      temperature: 0.2,
-      repeat_penalty: 1.2,
+      temperature: 0.1,
+      repeat_penalty: 1.1,
       top_p: 0.9,
       num_predict: 800,
       stop: ["```", "###", "Instruction:"]
@@ -47,7 +51,12 @@ export async function* streamFromLLM(prompt: string, schema?: any): AsyncGenerat
   };
 
   if (schema) {
-    payload.format = "json";
+    const cleanSchema = JSON.parse(JSON.stringify(schema));
+    delete cleanSchema.$schema;
+    if (cleanSchema.additionalProperties !== undefined) {
+      delete cleanSchema.additionalProperties;
+    }
+    payload.format = cleanSchema;
   }
 
   const response = await axios.post(OLLAMA_URL, payload, {

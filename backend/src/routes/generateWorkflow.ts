@@ -20,16 +20,14 @@ export async function generateWorkflow(description: string) {
 
   console.log(`RAG: ${tools.length} tools, ${examples.length} examples, ${faqs.length} FAQs`);
 
-  // 2. Dynamic Prompt Construction (Alpaca Format for Fine-Tuned Model)
-  const prompt = `Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
-
-### Instruction:
+  // 2. Dynamic Prompt Construction
+  const prompt = `### Instruction:
 ${WORKFLOW_GENERATOR_PROMPT(toolsContext, examplesContext, faqContext)}
 
 ### Input:
 ${description}
 
-### Response:
+### Output (JSON ONLY):
 `;
 
   for (let attempt = 1; attempt <= 2; attempt++) {
@@ -64,15 +62,13 @@ export async function registerGenerateWorkflow(fastify: FastifyInstance) {
     const examplesContext = Retriever.formatExamples(examples);
     const faqContext = Retriever.formatFAQs(faqs);
 
-    const prompt = `Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
-
-### Instruction:
+    const prompt = `### Instruction:
 ${WORKFLOW_GENERATOR_PROMPT(toolsContext, examplesContext, faqContext)}
 
 ### Input:
 ${description}
 
-### Response:
+### Output (JSON ONLY):
 `;
 
     // Set headers for streaming

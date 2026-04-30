@@ -1,5 +1,10 @@
 export const WORKFLOW_GENERATOR_PROMPT = (toolsContext: string, examplesContext: string, faqContext: string) => `
-Generate a workflow JSON from the request.
+You are a workflow automation engine. Translate the User Request into a single, valid JSON object. 
+
+- Map verbs to 'activities' (id, type, method, endpoint).
+- Map 'then' or 'next' to 'success' dependencies.
+- Map 'if it fails' to a 'failure' dependency.
+- Return ONLY the JSON. Do not explain your reasoning. Do not repeat the prompt.
 
 You MUST return ONLY valid JSON that follows this structure EXACTLY:
 
@@ -73,7 +78,6 @@ CRITICAL RULES (DO NOT VIOLATE):
   }
 }
 
-Now, generate a workflow for the following user request:
 `;
 
 

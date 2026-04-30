@@ -12,9 +12,10 @@ export async function generateFromLLM(
     prompt,
     stream: false,
     options: {
-      temperature: 0.1, // Slight temperature to prevent argmax loops
-      repeat_penalty: 1.2, // Penalize repeating the same activities
+      temperature: 0.4, // Higher temperature to avoid deterministic argmax loops
+      repeat_penalty: 1.5, // Strong penalty for repetition
       top_p: 0.9,
+      num_predict: 800, // Hard limit to prevent infinite hang
       stop: ["```", "###", "Instruction:"]
     }
   };
@@ -37,9 +38,10 @@ export async function* streamFromLLM(prompt: string, schema?: any): AsyncGenerat
     prompt,
     stream: true,
     options: {
-      temperature: 0.1,
+      temperature: 0.2,
       repeat_penalty: 1.2,
       top_p: 0.9,
+      num_predict: 800,
       stop: ["```", "###", "Instruction:"]
     }
   };
